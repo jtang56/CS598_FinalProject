@@ -25,7 +25,6 @@ from collections import Counter
 # bot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
 
-
 # instantiate Slack clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
@@ -72,21 +71,19 @@ def text_posted_participation(slack_rtm_output):
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and not('bot_id' in output) and not('attachments' in output):
-                if not 'thread_ts' in output and not post_is_copied(output['text']):
-                    credit = text_post_score
+                if not 'thread_ts' in output:
+                    credit = 0.1
                     return 'posted_text_participation', \
                            output['text'], \
                            output['channel'], \
-                           output['user'], \
-                           credit
+                           output['user']
                 elif not 'thread_ts' in output:
                     return 'text_copied', \
                            output['text'], \
                            output['channel'], \
-                           output['user'], \
-                           0
+                           output['user']
     #### Returns null if it is not a valid output.            
-    return None, None, None, None, -1
+    return None, None, None, None
 
 ################
 # CREDITS
@@ -126,9 +123,30 @@ def updateAndPrintCredit(scoreMap, user, scoretype, credit, doPrint=True):
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # second delay between reading from firehose
 
-    # Update participation map
-    create_participation_map()
+    facts_list = {}
 
+    with open('facts.txt') as facts:
+        for key, val in enumerate(facts.readlines()):
+            facts_list[key] = val.strip()
+    
+    num_facts = len(facts_list.keys())
+    users = {}
+    channel_info = slack_client.api_call("channels.list")
+    channel = channel_info['channels'][0]['id']
+    user_info = slack_client.api_call("users.list")
+    for user in user_info['members']:
+        if not user['is_bot'] and user['id'] != 'USLACKBOT':
+            users[user['name']] = user['real_name']
+    num_users = len(users.keys())        
+##########FOR DIRECT MESSAGES##########
+    for user in users.keys():
+        response = "Hi " + users[user] + ", I am Green Lantern Bot"
+        #slack_client.api_call("chat.postMessage", channel="@"+user, text=response, as_user=True)  
+#######################################
+    message = "Hello world! The number of people in this channel is " + str(num_users)
+    #TODO
+    #CHANGE channel to #networksclassf2017
+    slack_client.api_call("chat.postMessage", channel="#general", text=message, as_user=True)
     ##### Map storing the scores of all users who have contributed some content
     scoreMap = {}
 
@@ -144,14 +162,14 @@ if __name__ == "__main__":
             ### PARTICIPATION ###
             scoretype = 'participation'
             # POSTING text
-            commandtype, command, channel, user, credit = text_posted_participation(current_state)
+            commandtype, command, channel, user = text_posted_participation(current_state)
             if commandtype and command and channel and user:
                 # Handles current output
                 handle_command(commandtype, command, channel, user)
                 # Updates credit of users
-                scoreMap = updateAndPrintCredit(scoreMap, user, scoretype, credit, False)
+                #scoreMap = updateAndPrintCredit(scoreMap, user, scoretype, credit, False)
 
             # End.
             time.sleep(READ_WEBSOCKET_DELAY)
     else:
-        print("Connection failed. Invalid Slack token or bot ID?")
+        print("Connection failed.")
