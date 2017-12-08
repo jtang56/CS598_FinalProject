@@ -136,11 +136,11 @@ if __name__ == "__main__":
     user_info = slack_client.api_call("users.list")
     for user in user_info['members']:
         if not user['is_bot'] and user['id'] != 'USLACKBOT':
-            users[user['name']] = user['real_name']
+            users[user['name']] = user['profile']['display_name']
     num_users = len(users.keys())        
 ##########FOR DIRECT MESSAGES##########
-    for user in users.keys():
-        response = "Hi " + users[user] + ", I am Green Lantern Bot"
+    #for user in users.keys():
+        #response = "Hi " + users[user] + ", I am Green Lantern Bot"
         #slack_client.api_call("chat.postMessage", channel="@"+user, text=response, as_user=True)  
 #######################################
     message = "Hello world! The number of people in this channel is " + str(num_users)
