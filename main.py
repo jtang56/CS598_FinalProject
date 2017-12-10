@@ -53,7 +53,7 @@ def handle_command(commandtype, command, channel, user):
     elif commandtype == 'DM_joke_post':
         response = "You chose a joke"
     elif commandtype == 'DM_post':
-        response = "Hello, " + users[user] + "type \"fact\" for a cool fact \n type \"joke\" for a funny joke"
+        response = "Hello, " + users[user] + "\ntype \"fact\" for a cool fact \n type \"joke\" for a funny joke"
         #attachments = FACT_JOKE_MESSAGE["attachments"]
         #slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
     elif commandtype == 'not_DM_post':
