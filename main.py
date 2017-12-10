@@ -43,7 +43,7 @@ def handle_command(commandtype, command, channel, user):
     """
         Receives commands/contents generated.
         Currenly, prints a directed message to the user containing the same content.
-    """
+        """
 
     # Participation
     if commandtype == 'posted_text_participation':
@@ -60,7 +60,7 @@ def handle_command(commandtype, command, channel, user):
         response = "*" + command + "*" + " was posted in a public channel"
     else:
         response = ""
- 
+
     # Posts a directed message to the user.
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
@@ -78,19 +78,19 @@ def post_is_DM(slack_rtm_output):
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and output["channel"][0] == 'D' and not output['user'] == BOT_ID:
                 if "fact" in output['text']:
                     return 'DM_fact_post', \
-                       output['text'], \
-                       output['channel'], \
-                       output['user']
+                    output['text'], \
+                    output['channel'], \
+                    output['user']
                 elif "joke" in output['text']:
                     return 'DM_joke_post', \
-                       output['text'], \
-                       output['channel'], \
-                       output['user']
+                    output['text'], \
+                    output['channel'], \
+                    output['user']
                 else:
                     return 'DM_post', \
-                       output['text', \
-                       output['channel'], \
-                       output['user']
+                    output['text'], \
+                    output['channel'], \
+                    output['user']
     #### Returns null if it is not a valid output.            
     return None, None, None, None
 
@@ -100,11 +100,11 @@ def post_is_not_DM(slack_rtm_output):
         for output in output_list:
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and not output["channel"][0] == 'D' and not output['user'] == BOT_ID:
                 return 'not_DM_post', \
-                       output['text'], \
-                       output['channel'], \
-                       output['user']
-    #### Returns null if it is not a valid output.            
-    return None, None, None, None
+                output['text'], \
+                output['channel'], \
+                output['user']
+#### Returns null if it is not a valid output.            
+return None, None, None, None
 ################
 # PARTICIPATION
 ################
@@ -117,14 +117,14 @@ def text_posted_participation(slack_rtm_output):
                 if not 'thread_ts' in output:
                     credit = 0.1
                     return 'posted_text_participation', \
-                           output['text'], \
-                           output['channel'], \
-                           output['user']
+                    output['text'], \
+                    output['channel'], \
+                    output['user']
                 elif not 'thread_ts' in output:
                     return 'text_copied', \
-                           output['text'], \
-                           output['channel'], \
-                           output['user']
+                    output['text'], \
+                    output['channel'], \
+                    output['user']
     #### Returns null if it is not a valid output.            
     return None, None, None, None
 
@@ -134,28 +134,28 @@ def text_posted_participation(slack_rtm_output):
 def updateAndPrintCredit(scoreMap, user, scoretype, credit, doPrint=True):
     """
         Updates and prints the current credit score of all users who have generated some content
-    """
-    if scoretype == 'quality':
-        max_score = MAX_QUALITY_SCORE
-    else:
-        max_score = MAX_PARTICIPATION_SCORE
+        """
+        if scoretype == 'quality':
+            max_score = MAX_QUALITY_SCORE
+        else:
+            max_score = MAX_PARTICIPATION_SCORE
 
-    if user in scoreMap:
-        scoreMap[user][scoretype] = scoreMap[user][scoretype] + credit
-        if scoreMap[user][scoretype] > max_score:
-            scoreMap[user][scoretype] = max_score
-    else:
-        scoreMap[user] = {'quality': 0.0, 'participation': 0.0}
-        scoreMap[user][scoretype] = credit
+            if user in scoreMap:
+                scoreMap[user][scoretype] = scoreMap[user][scoretype] + credit
+                if scoreMap[user][scoretype] > max_score:
+                    scoreMap[user][scoretype] = max_score
+                else:
+                    scoreMap[user] = {'quality': 0.0, 'participation': 0.0}
+                    scoreMap[user][scoretype] = credit
 
-    if doPrint:
-        for usr, cred in scoreMap.items():
-            response1 = "<@" + usr + ">" + " your score is " + str(round(cred['quality'], 3)) + " out of " + str(MAX_QUALITY_SCORE) + " for quality, "         
-            response2 = "and " + str(round(cred['participation'], 3)) + " out of " + str(MAX_PARTICIPATION_SCORE) + " for participation, "
-            response3 = "for a total of " + str(round(cred['quality'] + cred['participation'], 3)) + " points "
-            response = response1 + response2 + response3
-            slack_client.api_call("chat.postMessage", channel=channel,
-                text=response, as_user=True)
+                    if doPrint:
+                        for usr, cred in scoreMap.items():
+                            response1 = "<@" + usr + ">" + " your score is " + str(round(cred['quality'], 3)) + " out of " + str(MAX_QUALITY_SCORE) + " for quality, "         
+                            response2 = "and " + str(round(cred['participation'], 3)) + " out of " + str(MAX_PARTICIPATION_SCORE) + " for participation, "
+                            response3 = "for a total of " + str(round(cred['quality'] + cred['participation'], 3)) + " points "
+                            response = response1 + response2 + response3
+                            slack_client.api_call("chat.postMessage", channel=channel,
+                                text=response, as_user=True)
 
     # Returning updated credit map
     return scoreMap
@@ -172,21 +172,21 @@ if __name__ == "__main__":
     for fact in fact_data["facts"]:
         facts_list[fact] = False
 
-    jokes_data = json.load(open('jokes.json'))
-    for joke in jokes_data["jokes"]:
-        jokes_list[joke] = False
+        jokes_data = json.load(open('jokes.json'))
+        for joke in jokes_data["jokes"]:
+            jokes_list[joke] = False
 
-    users = {}
-    channel_info = slack_client.api_call("channels.list")
-    channel = channel_info['channels'][0]['id']
-    user_info = slack_client.api_call("users.list")
-    for user in user_info['members']:
-        if not user['is_bot'] and user['id'] != 'USLACKBOT':
-            users[user['id']] = user['name']
-    num_users = len(users.keys())        
+            users = {}
+            channel_info = slack_client.api_call("channels.list")
+            channel = channel_info['channels'][0]['id']
+            user_info = slack_client.api_call("users.list")
+            for user in user_info['members']:
+                if not user['is_bot'] and user['id'] != 'USLACKBOT':
+                    users[user['id']] = user['name']
+                    num_users = len(users.keys())        
 
-    with open('message.json') as json_data:
-        FACT_JOKE_MESSAGE = json.load(json_data)
+                    with open('message.json') as json_data:
+                        FACT_JOKE_MESSAGE = json.load(json_data)
 
 ##########FOR DIRECT MESSAGES##########
     #for user in users.keys():
@@ -207,7 +207,7 @@ if __name__ == "__main__":
             current_state = slack_client.rtm_read()
             if current_state == None or len(current_state) <= 0:
                 continue
-            print (current_state)
+                print (current_state)
 
             ### PARTICIPATION ###
             scoretype = 'participation'
@@ -217,9 +217,9 @@ if __name__ == "__main__":
             if commandtype and command and channel and user:
                 handle_command(commandtype, command, channel, user) 
 
-            commandtype, command, channel, user = post_is_not_DM(current_state)
-            if commandtype and command and channel and user:
-                handle_command(commandtype, command, channel, user)
+                commandtype, command, channel, user = post_is_not_DM(current_state)
+                if commandtype and command and channel and user:
+                    handle_command(commandtype, command, channel, user)
 
             # POSTING text
             #commandtype, command, channel, user = text_posted_participation(current_state)
@@ -231,5 +231,5 @@ if __name__ == "__main__":
 
             # End.
             time.sleep(READ_WEBSOCKET_DELAY)
-    else:
-        print("Connection failed.")
+        else:
+            print("Connection failed.")
