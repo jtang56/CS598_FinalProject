@@ -19,12 +19,13 @@
 
 import os
 import time
+import json
 from slackclient import SlackClient
 from collections import Counter
 
 # bot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
-
+FACT_JOKE_MESSAGE = ""
 # instantiate Slack clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
@@ -46,12 +47,19 @@ def handle_command(commandtype, command, channel, user):
     # Participation
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
+    elif commandtype == 'DM_post':
+        #response = "Thanks for the DM"
+        print(users)
+        response = "Hello, " + users[user]
+        attachments = FACT_JOKE_MESSAGE["attachments"]
+        slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
+    elif commandtype == 'not_DM_post':
+        response = "*" + command + "*" + " was posted in a public channel"
     else:
         response = ""
  
     # Posts a directed message to the user.
-    slack_client.api_call("chat.postMessage", channel=channel,
-                          text=response, as_user=True)
+    #slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
     # You can also post a private directed message that only that user will see. 
     # slack_client.api_call("chat.postEphemeral", channel=channel,
@@ -60,8 +68,29 @@ def handle_command(commandtype, command, channel, user):
 ################
 # SETUP
 ################
+def post_is_DM(slack_rtm_output):
+    output_list = slack_rtm_output
+    if output_list and len(output_list) > 0:
+        for output in output_list:
+            if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and output["channel"][0] == 'D' and not output['user'] == BOT_ID:
+                return 'DM_post', \
+                       output['text'], \
+                       output['channel'], \
+                       output['user']
+    #### Returns null if it is not a valid output.            
+    return None, None, None, None
 
-
+def post_is_not_DM(slack_rtm_output):
+    output_list = slack_rtm_output
+    if output_list and len(output_list) > 0:
+        for output in output_list:
+            if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and not output["channel"][0] == 'D' and not output['user'] == BOT_ID:
+                return 'not_DM_post', \
+                       output['text'], \
+                       output['channel'], \
+                       output['user']
+    #### Returns null if it is not a valid output.            
+    return None, None, None, None
 ################
 # PARTICIPATION
 ################
@@ -136,17 +165,22 @@ if __name__ == "__main__":
     user_info = slack_client.api_call("users.list")
     for user in user_info['members']:
         if not user['is_bot'] and user['id'] != 'USLACKBOT':
-            users[user['name']] = user['profile']['display_name']
+            users[user['id']] = user['name']
     num_users = len(users.keys())        
+
+    with open('message.json') as json_data:
+        #FACT_JOKE_MESSAGE = json_data.read()
+        FACT_JOKE_MESSAGE = json.load(json_data)
+
 ##########FOR DIRECT MESSAGES##########
     #for user in users.keys():
         #response = "Hi " + users[user] + ", I am Green Lantern Bot"
         #slack_client.api_call("chat.postMessage", channel="@"+user, text=response, as_user=True)  
 #######################################
-    message = "Hello world! The number of people in this channel is " + str(num_users)
+    #message = "Hello world! The number of people in this channel is " + str(num_users)
     #TODO
     #CHANGE channel to #networksclassf2017
-    slack_client.api_call("chat.postMessage", channel="#general", text=message, as_user=True)
+    #slack_client.api_call("chat.postMessage", channel="#general", text=message, as_user=True)
     ##### Map storing the scores of all users who have contributed some content
     scoreMap = {}
 
@@ -161,11 +195,21 @@ if __name__ == "__main__":
 
             ### PARTICIPATION ###
             scoretype = 'participation'
-            # POSTING text
-            commandtype, command, channel, user = text_posted_participation(current_state)
+
+            # Detect a Direct Message to the bot # 
+            commandtype, command, channel, user = post_is_DM(current_state)
             if commandtype and command and channel and user:
-                # Handles current output
+                handle_command(commandtype, command, channel, user) 
+
+            commandtype, command, channel, user = post_is_not_DM(current_state)
+            if commandtype and command and channel and user:
                 handle_command(commandtype, command, channel, user)
+
+            # POSTING text
+            #commandtype, command, channel, user = text_posted_participation(current_state)
+            #if commandtype and command and channel and user:
+                # Handles current output
+                #handle_command(commandtype, command, channel, user)
                 # Updates credit of users
                 #scoreMap = updateAndPrintCredit(scoreMap, user, scoretype, credit, False)
 
