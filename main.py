@@ -197,8 +197,8 @@ if __name__ == "__main__":
             users[user['id']] = user['name']
             num_users = len(users.keys())        
 
-            with open('message.json') as json_data:
-                FACT_JOKE_MESSAGE = json.load(json_data)
+        with open('message.json') as json_data:
+            FACT_JOKE_MESSAGE = json.load(json_data)
 
 ##########FOR DIRECT MESSAGES##########
     #for user in users.keys():
