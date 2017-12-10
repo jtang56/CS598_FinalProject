@@ -115,8 +115,8 @@ def post_is_not_DM(slack_rtm_output):
                 output['text'], \
                 output['channel'], \
                 output['user']
-#### Returns null if it is not a valid output.            
-return None, None, None, None
+    #### Returns null if it is not a valid output.            
+    return None, None, None, None
 ################
 # PARTICIPATION
 ################
@@ -145,29 +145,29 @@ def text_posted_participation(slack_rtm_output):
 ################
 def updateAndPrintCredit(scoreMap, user, scoretype, credit, doPrint=True):
     """
-        Updates and prints the current credit score of all users who have generated some content
-        """
-        if scoretype == 'quality':
-            max_score = MAX_QUALITY_SCORE
-        else:
-            max_score = MAX_PARTICIPATION_SCORE
+    Updates and prints the current credit score of all users who have generated some content
+    """
+    if scoretype == 'quality':
+        max_score = MAX_QUALITY_SCORE
+    else:
+        max_score = MAX_PARTICIPATION_SCORE
 
-            if user in scoreMap:
-                scoreMap[user][scoretype] = scoreMap[user][scoretype] + credit
-                if scoreMap[user][scoretype] > max_score:
-                    scoreMap[user][scoretype] = max_score
-                else:
-                    scoreMap[user] = {'quality': 0.0, 'participation': 0.0}
-                    scoreMap[user][scoretype] = credit
+        if user in scoreMap:
+            scoreMap[user][scoretype] = scoreMap[user][scoretype] + credit
+            if scoreMap[user][scoretype] > max_score:
+                scoreMap[user][scoretype] = max_score
+            else:
+                scoreMap[user] = {'quality': 0.0, 'participation': 0.0}
+                scoreMap[user][scoretype] = credit
 
-                    if doPrint:
-                        for usr, cred in scoreMap.items():
-                            response1 = "<@" + usr + ">" + " your score is " + str(round(cred['quality'], 3)) + " out of " + str(MAX_QUALITY_SCORE) + " for quality, "         
-                            response2 = "and " + str(round(cred['participation'], 3)) + " out of " + str(MAX_PARTICIPATION_SCORE) + " for participation, "
-                            response3 = "for a total of " + str(round(cred['quality'] + cred['participation'], 3)) + " points "
-                            response = response1 + response2 + response3
-                            slack_client.api_call("chat.postMessage", channel=channel,
-                                text=response, as_user=True)
+                if doPrint:
+                    for usr, cred in scoreMap.items():
+                        response1 = "<@" + usr + ">" + " your score is " + str(round(cred['quality'], 3)) + " out of " + str(MAX_QUALITY_SCORE) + " for quality, "         
+                        response2 = "and " + str(round(cred['participation'], 3)) + " out of " + str(MAX_PARTICIPATION_SCORE) + " for participation, "
+                        response3 = "for a total of " + str(round(cred['quality'] + cred['participation'], 3)) + " points "
+                        response = response1 + response2 + response3
+                        slack_client.api_call("chat.postMessage", channel=channel,
+                            text=response, as_user=True)
 
     # Returning updated credit map
     return scoreMap
