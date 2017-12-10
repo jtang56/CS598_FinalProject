@@ -47,19 +47,21 @@ def handle_command(commandtype, command, channel, user):
     # Participation
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
+    elif commandtype == 'DM_fact_post':
+        response = "You chose a fact"
+    elif commandtype == 'DM_joke_post':
+        response = "You chose a joke"
     elif commandtype == 'DM_post':
-        #response = "Thanks for the DM"
-        print(users)
-        response = "Hello, " + users[user]
-        attachments = FACT_JOKE_MESSAGE["attachments"]
-        slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
+        response = "Hello, " + users[user] + "type \"fact\" for a cool fact \n type \"joke\" for a funny joke"
+        #attachments = FACT_JOKE_MESSAGE["attachments"]
+        #slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
     elif commandtype == 'not_DM_post':
         response = "*" + command + "*" + " was posted in a public channel"
     else:
         response = ""
  
     # Posts a directed message to the user.
-    #slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+    slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
     # You can also post a private directed message that only that user will see. 
     # slack_client.api_call("chat.postEphemeral", channel=channel,
@@ -73,8 +75,19 @@ def post_is_DM(slack_rtm_output):
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and output["channel"][0] == 'D' and not output['user'] == BOT_ID:
-                return 'DM_post', \
+                if "fact" in output['text']:
+                    return 'DM_fact_post', \
                        output['text'], \
+                       output['channel'], \
+                       output['user']
+                elif "joke" in output['text']:
+                    return 'DM_joke_post', \
+                       output['text'], \
+                       output['channel'], \
+                       output['user']
+                else:
+                    return 'DM_post', \
+                       output['text', \
                        output['channel'], \
                        output['user']
     #### Returns null if it is not a valid output.            
@@ -169,7 +182,6 @@ if __name__ == "__main__":
     num_users = len(users.keys())        
 
     with open('message.json') as json_data:
-        #FACT_JOKE_MESSAGE = json_data.read()
         FACT_JOKE_MESSAGE = json.load(json_data)
 
 ##########FOR DIRECT MESSAGES##########
