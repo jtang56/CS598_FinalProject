@@ -22,6 +22,7 @@ import time
 import json
 from slackclient import SlackClient
 from collections import Counter
+import json
 
 # bot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
@@ -166,12 +167,15 @@ if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # second delay between reading from firehose
 
     facts_list = {}
+    jokes_list = {}
+    fact_data = json.load(open('facts.json'))
+    for fact in fact_data["facts"]:
+        facts_list[fact] = False
 
-    with open('facts.txt') as facts:
-        for key, val in enumerate(facts.readlines()):
-            facts_list[key] = val.strip()
-    
-    num_facts = len(facts_list.keys())
+    jokes_data = json.load(open('jokes.json'))
+    for joke in jokes_data["jokes"]:
+        jokes_list[joke] = False
+
     users = {}
     channel_info = slack_client.api_call("channels.list")
     channel = channel_info['channels'][0]['id']
