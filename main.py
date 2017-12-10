@@ -184,21 +184,21 @@ if __name__ == "__main__":
     for fact in fact_data["facts"]:
         facts_list[fact] = False
 
-        jokes_data = json.load(open('jokes.json'))
-        for joke in jokes_data["jokes"]:
-            jokes_list[joke] = False
+    jokes_data = json.load(open('jokes.json'))
+    for joke in jokes_data["jokes"]:
+        jokes_list[joke] = False
 
-            users = {}
-            channel_info = slack_client.api_call("channels.list")
-            channel = channel_info['channels'][0]['id']
-            user_info = slack_client.api_call("users.list")
-            for user in user_info['members']:
-                if not user['is_bot'] and user['id'] != 'USLACKBOT':
-                    users[user['id']] = user['name']
-                    num_users = len(users.keys())        
+    users = {}
+    channel_info = slack_client.api_call("channels.list")
+    channel = channel_info['channels'][0]['id']
+    user_info = slack_client.api_call("users.list")
+    for user in user_info['members']:
+        if not user['is_bot'] and user['id'] != 'USLACKBOT':
+            users[user['id']] = user['name']
+            num_users = len(users.keys())        
 
-                    with open('message.json') as json_data:
-                        FACT_JOKE_MESSAGE = json.load(json_data)
+            with open('message.json') as json_data:
+                FACT_JOKE_MESSAGE = json.load(json_data)
 
 ##########FOR DIRECT MESSAGES##########
     #for user in users.keys():
