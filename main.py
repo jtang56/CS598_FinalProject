@@ -53,7 +53,7 @@ def handle_command(commandtype, command, channel, user):
     elif commandtype == 'DM_joke_post':
         response = "You chose a joke"
     elif commandtype == 'DM_post':
-        response = "Hello, " + users[user] + "type \"fact\" for a cool fact \n type \"joke\" for a funny joke"
+        response = "Hello, " + users[user] + "\ntype \"fact\" for a cool fact \n type \"joke\" for a funny joke"
         #attachments = FACT_JOKE_MESSAGE["attachments"]
         #slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
     elif commandtype == 'not_DM_post':
@@ -78,19 +78,19 @@ def post_is_DM(slack_rtm_output):
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and output["channel"][0] == 'D' and not output['user'] == BOT_ID:
                 if "fact" in output['text']:
                     return 'DM_fact_post', \
-                       output['text'], \
-                       output['channel'], \
-                       output['user']
-                elif "joke" in output['text']:
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
+                if "joke" in output['text']:
                     return 'DM_joke_post', \
-                       output['text'], \
-                       output['channel'], \
-                       output['user']
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
                 else:
                     return 'DM_post', \
-                       output['text', \
-                       output['channel'], \
-                       output['user']
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
     #### Returns null if it is not a valid output.            
     return None, None, None, None
 
