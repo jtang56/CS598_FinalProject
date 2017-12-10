@@ -48,10 +48,12 @@ def handle_command(commandtype, command, channel, user):
     # Participation
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
-    elif commandtype == 'DM_fact_post':
-        response = "You chose a fact"
+    elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
+        response = "Great! Here's a juicy fact: "
     elif commandtype == 'DM_joke_post':
-        response = "You chose a joke"
+        response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")? There are some extremely interesting facts."
+    elif commandtype == 'DM_confirmation_yes_post':
+        response = "Great! Here's a joke"
     elif commandtype == 'DM_post':
         response = "Hello, " + users[user] + "\ntype \"fact\" for a cool fact \n type \"joke\" for a funny joke"
         #attachments = FACT_JOKE_MESSAGE["attachments"]
@@ -81,8 +83,18 @@ def post_is_DM(slack_rtm_output):
                            output['text'], \
                            output['channel'], \
                            output['user']
-                if "joke" in output['text']:
+                elif "joke" in output['text']:
                     return 'DM_joke_post', \
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
+                elif "yes" in output['text']:
+                    return 'DM_confirmation_yes_post', \
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
+                elif "no" in output['text']:
+                    return 'DM_confirmation_no_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
