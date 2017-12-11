@@ -50,14 +50,15 @@ def handle_command(commandtype, command, channel, user):
         response = "Yeah, it really is"
     elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
         fact = random.choice(users_facts[user])
-        response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact
+        response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact[0]
         users_facts[user].remove(fact)
+        users_facts_test[user].append(fact)
         users_facts_read[user] += 1
     elif commandtype == 'DM_joke_post':
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")?"
     elif commandtype == 'DM_confirmation_yes_post':
         joke = random.choice(users_jokes[user])
-        response = "Here's a joke: \n\n" + joke
+        response = "Here's a joke: \n\n" + joke[0]
         users_jokes[user].remove(joke)
         users_jokes_read[user] += 1
         #response = "Great! Here's a joke"
@@ -203,6 +204,7 @@ if __name__ == "__main__":
     users = {}
     users_facts = {}
     users_facts_read = {}
+    users_facts_test = {}
     users_jokes = {}
     users_jokes_read = {}
     channel_info = slack_client.api_call("channels.list")
@@ -213,6 +215,7 @@ if __name__ == "__main__":
             users[user['id']] = user['name']
             users_facts[user['id']] = copy.copy(facts_list)
             users_facts_read[user['id']] = 0
+            users_jokes_test[user['id']] = []
             users_jokes[user['id']] = copy.copy(jokes_list)
             users_jokes_read[user['id']] = 0
             num_users = len(users.keys())        
