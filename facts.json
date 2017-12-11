@@ -13,10 +13,10 @@
 			"Do you know your facts? Fill in the blank!\nArctic ice is rapidly disappearing, and the region may have its first completely ice-free summer by ____ or earlier. Polar bears and indigenous cultures are already suffering from the sea-ice loss.",
 			"2040"],
 		["Glaciers and mountain snows are rapidly melting—for example, Montana's Glacier National Park now has only 27 glaciers, versus 150 in 1910. In the Northern Hemisphere, thaws also come a week earlier in spring and freezes begin a week later.",
-			"Do you know your facts? Fill in the blank!\nGlaciers and mountain snows are rapidly melting—for example, Montana's Glacier National Park now has only __ glaciers, versus 150 in 1910. In the Northern Hemisphere, thaws also come a week earlier in spring and freezes begin a week later.,
+			"Do you know your facts? Fill in the blank!\nGlaciers and mountain snows are rapidly melting—for example, Montana's Glacier National Park now has only __ glaciers, versus 150 in 1910. In the Northern Hemisphere, thaws also come a week earlier in spring and freezes begin a week later.",
 			"27"],
 		["Coral reefs, which are highly sensitive to small changes in water temperature, suffered the worst bleaching—or die-off in response to stress—ever recorded in 1998, with some areas seeing bleach rates of 70 percent. Experts expect these sorts of events to increase in frequency and intensity in the next 50 years as sea temperatures rise.",
-			"Do you know your facts? Fill in the blank!\nCoral reefs, which are highly sensitive to small changes in water temperature, suffered the worst bleaching—or die-off in response to stress—ever recorded in 1998, with some areas seeing bleach rates of __ percent. Experts expect these sorts of events to increase in frequency and intensity in the next 50 years as sea temperatures rise.,
+			"Do you know your facts? Fill in the blank!\nCoral reefs, which are highly sensitive to small changes in water temperature, suffered the worst bleaching—or die-off in response to stress—ever recorded in 1998, with some areas seeing bleach rates of __ percent. Experts expect these sorts of events to increase in frequency and intensity in the next 50 years as sea temperatures rise.",
 			"70"],
 		["An upsurge in the amount of extreme weather events, such as wildfires, heat waves, and strong tropical storms, is also attributed in part to climate change by some experts.",
 			"Do you know your facts? Fill in the blank!\nAn upsurge in the amount of extreme weather events, such as _________, heat waves, and strong tropical storms, is also attributed in part to climate change by some experts.",
@@ -65,30 +65,40 @@
 			"heat"],
 		["A new study found that violent crimes and even war become more likely as temperatures rise. Heart rates tend to be elevated in warm weather, so people are prepped for a physical response to a situation.",
 			"Do you know your facts? Fill in the blank!\nA new study found that violent crimes and even ___ become more likely as temperatures rise. Heart rates tend to be elevated in warm weather, so people are prepped for a physical response to a situation.",
-			"war"]
-
-		// ["Rising water levels can also put fragile coral reefs in danger. Coral relies on sunlight, which could become scarce as water levels rise.",
-		// "Do you know your facts? Fill in the blank!\n
-		// ["Mountain ranges are growing as a result of global warming. That's because the glaciers that have literally been weighing them down and pushing them into Earth for centuries are melting",
-		// "Do you know your facts? Fill in the blank!\n
-		// ["Even if emissions were eliminated entirely today, global warming would continue as a result of all the built-up carbon dioxide. That could cause temperatures and sea levels to rise for at least a century after the emissions stop.",
-		// "Do you know your facts? Fill in the blank!\n
-		// ["Saving water reduces carbon pollution, too. That's because it takes a lot of energy to pump, heat, and treat your water.",
-		// "Do you know your facts? Fill in the blank!\n
-		// ["If all Americans kept their tires properly inflated, we could say 1.2 billion gallons of gas each year.",
-		// "Do you know your facts? Fill in the blank!\n
-		// ["Buildings worldwide contribute around one third of all greenhouse gas emissions (43 percent in the U.S. alone)",
-		// "Do you know your facts? Fill in the blank!\n
-		// ["Transportation is the second leading source of greenhouse gas emissions in the U.S. (burning a single gallon of gasoline produces 20 pounds of CO2)",
-		// "Do you know your facts? Fill in the blank!\n
-		// "The easiest way to cut back on greenhouse gas emissions is simply to buy less stuff. Whether by forgoing an automobile or employing a reusable grocery sack, cutting back on consumption results in fewer fossil fuels being burned to extract, produce and ship products around the globe.",
-		// "Do you know your facts? Fill in the blank!\n
-		// "Corn grown in the U.S. requires barrels of oil for the fertilizer to grow it and the diesel fuel to harvest and transport it. Some grocery stores stock organic produce that do not require such fertilizers, but it is often shipped from halfway across the globe. And meat, whether beef, chicken or pork, requires pounds of feed to produce a pound of protein.",
-		// "Do you know your facts? Fill in the blank!\n
-		// "Timber harvesting in the tropics alone contributes 1.5 billion metric tons of carbon to the atmosphere.",
-		// "Do you know your facts? Fill in the blank!\n
-		// "Believe it or not, U.S. citizens spend more money on electricity to power devices when off than when on."
-		// "Do you know your facts? Fill in the blank!\n
+			"war"],
+		["Rising water levels can also put fragile coral reefs in danger. Coral relies on sunlight, which could become scarce as water levels rise.",
+			"Do you know your facts? Fill in the blank!\nRising water levels can also put fragile coral reefs in danger. Coral relies on ________, which could become scarce as water levels rise.",
+			"sunlight"],
+		["Mountain ranges are growing as a result of global warming. That's because the glaciers that have literally been weighing them down and pushing them into Earth for centuries are melting",
+			"Do you know your facts? Fill in the blank!\nMountain ranges are growing as a result of global warming. That's because the ________ that have literally been weighing them down and pushing them into Earth for centuries are melting",
+			"glaciers"],
+		["Even if emissions were eliminated entirely today, global warming would continue as a result of all the built-up carbon dioxide. That could cause temperatures and sea levels to rise for at least a century after the emissions stop.",
+			"Do you know your facts? Fill in the blank!\nEven if emissions were eliminated entirely today, global warming would continue as a result of all the built-up carbon dioxide. That could cause ____________ and sea levels to rise for at least a century after the emissions stop.",
+			"temperatures"],
+		["Saving water reduces carbon pollution, too. That's because it takes a lot of energy to pump, heat, and treat your water.",
+			"Do you know your facts? Fill in the blank!\nSaving water reduces carbon pollution, too. That's because it takes a lot of ______ to pump, heat, and treat your water.",
+			"energy"],
+		["If all Americans kept their tires properly inflated, we could say 1.2 billion gallons of gas each year.",
+			"Do you know your facts? Fill in the blank!\nIf all Americans kept their _____ properly inflated, we could say 1.2 billion gallons of gas each year.",
+			"tires"],
+		["Buildings worldwide contribute around one third of all greenhouse gas emissions (43 percent in the U.S. alone)",
+			"Do you know your facts? Fill in the blank!\nBuildings worldwide contribute around one third of all greenhouse gas emissions (__ percent in the U.S. alone)",
+			"43"],
+		["Transportation is the second leading source of greenhouse gas emissions in the U.S. (burning a single gallon of gasoline produces 20 pounds of CO2)",
+			"Do you know your facts? Fill in the blank!\nTransportation is the second leading source of greenhouse gas emissions in the U.S. (burning a single gallon of gasoline produces __ pounds of CO2)",
+			"20"],
+		["The easiest way to cut back on greenhouse gas emissions is simply to buy less stuff. Whether by forgoing an automobile or employing a reusable grocery sack, cutting back on consumption results in fewer fossil fuels being burned to extract, produce and ship products around the globe.",
+			"Do you know your facts? Fill in the blank!\nThe easiest way to cut back on greenhouse gas emissions is simply to buy less stuff. Whether by forgoing an __________ or employing a reusable grocery sack, cutting back on consumption results in fewer fossil fuels being burned to extract, produce and ship products around the globe.",
+			"automobile"],
+		["Corn grown in the U.S. requires barrels of oil for the fertilizer to grow it and the diesel fuel to harvest and transport it. Some grocery stores stock organic produce that do not require such fertilizers, but it is often shipped from halfway across the globe. And meat, whether beef, chicken or pork, requires pounds of feed to produce a pound of protein.",
+			"Do you know your facts? Fill in the blank!\nCorn grown in the U.S. requires barrels of oil for the fertilizer to grow it and the diesel fuel to harvest and transport it. Some grocery stores stock _______ produce that do not require such fertilizers, but it is often shipped from halfway across the globe. And meat, whether beef, chicken or pork, requires pounds of feed to produce a pound of protein.",
+			"organic"],
+		["Timber harvesting in the tropics alone contributes 1.5 billion metric tons of carbon to the atmosphere.",
+			"Do you know your facts? Fill in the blank!\nTimber harvesting in the tropics alone contributes 1.5 billion metric tons of ______ to the atmosphere.",
+			"carbon"],
+		["Believe it or not, U.S. citizens spend more money on electricity to power devices when off than when on.",
+			"Do you know your facts? Fill in the blank!\nBelieve it or not, U.S. citizens spend more money on ___________ to power devices when off than when on.",
+			"electricity"]
 	]
 }
 
