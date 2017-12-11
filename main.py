@@ -221,8 +221,6 @@ def post_is_not_DM(slack_rtm_output):
 # MAIN
 ################
 if __name__ == "__main__":
-    READ_WEBSOCKET_DELAY = 1 # second delay between reading from firehose
-
     facts_list = []
     jokes_list = []
     fact_data = json.load(open('facts.json'))
@@ -256,8 +254,6 @@ if __name__ == "__main__":
             current_quiz_question[user['id']] = None
             num_users = len(users.keys())        
 
-    #TODO
-    #CHANGE channel to #networksclassf2017
     scoreMap = {}
 
     if slack_client.rtm_connect():
@@ -281,7 +277,6 @@ if __name__ == "__main__":
             if commandtype and command and channel and user:
                 handle_command(commandtype, command, channel, user)
 
-            time.sleep(READ_WEBSOCKET_DELAY)
         else:
             print("Connection failed.")
 
