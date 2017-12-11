@@ -116,12 +116,29 @@ def handle_badges(channel, user):
         response = badges_data["badges"][str(users_facts_read[user])]
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
         general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])]
+
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+#TODO: CHANGE #general to #networksclassf2017 ################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
         slack_client.api_call("chat.postMessage", channel="#general", text=general_response, as_user=True)
         if users_facts_read[user] >= 3:
             return True
     else:
-        #rand_num = random.randint(1, 10)
-        #if rand_num < 3:
         num_facts = users_facts_read[user]
         avg_facts = TOTAL_CHANNEL_FACTS_READ / num_users
         if num_facts > avg_facts:
@@ -239,16 +256,8 @@ if __name__ == "__main__":
             current_quiz_question[user['id']] = None
             num_users = len(users.keys())        
 
-##########FOR DIRECT MESSAGES##########
-    #for user in users.keys():
-        #response = "Hi " + users[user] + ", I am Green Lantern Bot"
-        #slack_client.api_call("chat.postMessage", channel="@"+user, text=response, as_user=True)  
-#######################################
-    #message = "Hello world! The number of people in this channel is " + str(num_users)
     #TODO
     #CHANGE channel to #networksclassf2017
-    #slack_client.api_call("chat.postMessage", channel="#general", text=message, as_user=True)
-    ##### Map storing the scores of all users who have contributed some content
     scoreMap = {}
 
     if slack_client.rtm_connect():
