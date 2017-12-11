@@ -32,6 +32,8 @@ BOT_ID = os.environ.get("BOT_ID")
 EXCITING_WORDS = ["Great!", "Fantastic!", "Awesome!", "Cool!"]
 TOTAL_CHANNEL_FACTS_READ = 0
 TOTAL_CHANNEL_JOKES_READ = 0
+TOTAL_QUIZZES_GIVEN = 0
+TOTAL_QUIZZES_CORRECT = 0
 # instantiate Slack clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
@@ -45,33 +47,41 @@ slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 ############
 
 def handle_command(commandtype, command, channel, user):
-    global TOTAL_CHANNEL_FACTS_READ, TOTAL_CHANNEL_JOKES_READ
+    global TOTAL_CHANNEL_FACTS_READ, TOTAL_CHANNEL_JOKES_READ, TOTAL_QUIZZES_CORRECT
     should_handle_badges = False
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
     elif commandtype == 'stats':
         response = "*Total Facts Read:* " + str(TOTAL_CHANNEL_FACTS_READ) + "\n" + \
                    "*Total Jokes Read:* " + str(TOTAL_CHANNEL_JOKES_READ) + "\n" + \
-                   "*Avg Facts Read:* " + str(TOTAL_CHANNEL_FACTS_READ / num_users) + \
-                   "*Avg Jokes Read:* " + str(TOTAL_CHANNEL_JOKES_READ / num_users)
+                   "*Avg Facts Read:* " + str(TOTAL_CHANNEL_FACTS_READ / num_users) + "\n" + \
+                   "*Avg Jokes Read:* " + str(TOTAL_CHANNEL_JOKES_READ / num_users) + "\n" + \
+                   "*Total Questions Administered:* " + str(TOTAL_QUIZZES_GIVEN) + "\n" + \
+                   "*Total Questions Answered Correct:* " + str(TOTAL_QUIZZES_CORRECT)
     elif commandtype == 'interesting_DM_post':
         response = "Yeah, it really is"
     elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
         should_handle_badges = True
-        fact = random.choice(users_facts[user])
-        response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact[0]
-        users_facts[user].remove(fact)
-        users_facts_test[user].append(fact)
-        users_facts_read[user] += 1
-        TOTAL_CHANNEL_FACTS_READ += 1
+        if users_facts[user] == []:
+            response = "WOW!!!!!!!! You've read all the facts we have! Great Job!"
+        else:
+            fact = random.choice(users_facts[user])
+            response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact[0]
+            users_facts[user].remove(fact)
+            users_facts_test[user].append(fact)
+            users_facts_read[user] += 1
+            TOTAL_CHANNEL_FACTS_READ += 1
     elif commandtype == 'DM_joke_post':
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")?"
     elif commandtype == 'DM_confirmation_yes_post':
-        joke = random.choice(users_jokes[user])
-        response = "Here's a joke: \n\n" + joke
-        users_jokes[user].remove(joke)
-        users_jokes_read[user] += 1
-        TOTAL_CHANNEL_JOKES_READ += 1
+        if users_jokes[user] == []:
+            response = "You've read all of the jokes. Thanks for playing!"
+        else:
+            joke = random.choice(users_jokes[user])
+            response = "Here's a joke: \n\n" + joke
+            users_jokes[user].remove(joke)
+            users_jokes_read[user] += 1
+            TOTAL_CHANNEL_JOKES_READ += 1
     elif commandtype == 'DM_post':
         response = "Hello, " + users[user] + "\ntype *fact* for a cool fact \n type *joke* for a joke"
     elif commandtype == 'not_DM_post':
@@ -79,6 +89,7 @@ def handle_command(commandtype, command, channel, user):
     elif commandtype == 'quiz_mode':
         if command.upper() == current_quiz_question[user][2].upper():
             response = "Correct! Congratulations on passing this quiz."
+            TOTAL_QUIZZES_CORRECT += 1
         else:
             response = "Incorrect! Try harder next time."
         quiz_mode[user] = False
@@ -104,13 +115,25 @@ def handle_badges(channel, user):
     if str(users_facts_read[user]) in badges_data["badges"].keys():
         response = badges_data["badges"][str(users_facts_read[user])]
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-        general_response = users[user] + " received " + badges_data["badges"][str(users_facts_read[user])]
+        general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])]
         slack_client.api_call("chat.postMessage", channel="#general", text=general_response, as_user=True)
         if users_facts_read[user] >= 3:
             return True
+    else:
+        #rand_num = random.randint(1, 10)
+        #if rand_num < 3:
+        num_facts = users_facts_read[user]
+        avg_facts = TOTAL_CHANNEL_FACTS_READ / num_users
+        if num_facts > avg_facts:
+            response = "*You've read more facts than the class average! Keep going!*"
+        else:
+            response = "*You've read fewer facts than the class average. Read a few more!*"
+        slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
     return False
 
 def post_quiz_question(channel, user):
+    global TOTAL_QUIZZES_GIVEN
+    TOTAL_QUIZZES_GIVEN += 1
     current_quiz_question[user] = random.choice(users_facts_test[user])
     response = "\n *Please answer this quick quiz question on the facts you've seen so far!* \n" + current_quiz_question[user][1]
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True) 
