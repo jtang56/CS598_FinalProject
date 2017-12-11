@@ -70,6 +70,7 @@ def handle_command(commandtype, command, channel, user):
 
     # Posts a directed message to the user.
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+    handle_badges(channel, user)
 
     # You can also post a private directed message that only that user will see. 
     # slack_client.api_call("chat.postEphemeral", channel=channel,
@@ -78,6 +79,14 @@ def handle_command(commandtype, command, channel, user):
 ################
 # SETUP
 ################
+def handle_badges(channel, user):
+    badges_data = json.load(open('badges.json'))
+    if str(users_facts_read[user]) in badges_data["badges"].keys():
+        response = badges_data["badges"][str(users_facts_read[user])]
+        slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+        general_response = users[user] + " received " + badges_data["badges"][str(users_facts_read[user])]
+        slack_client.api_call("chat.postMessage", channel="#general", text=general_response, as_user=True)
+
 def post_is_DM(slack_rtm_output):
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
