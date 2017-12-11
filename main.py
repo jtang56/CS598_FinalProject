@@ -44,11 +44,13 @@ slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
 def handle_command(commandtype, command, channel, user):
     # Participation
+    should_handle_badges = False
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
     elif commandtype == 'interesting_DM_post':
         response = "Yeah, it really is"
     elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
+        should_handle_badges = True
         fact = random.choice(users_facts[user])
         response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact[0]
         users_facts[user].remove(fact)
@@ -76,9 +78,10 @@ def handle_command(commandtype, command, channel, user):
 
     # Posts a directed message to the user.
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-    if handle_badges(channel, user):
-        quiz_mode[user] = True
-        post_quiz_question(channel, user)
+    if should_handle_badges:
+        if handle_badges(channel, user):
+            quiz_mode[user] = True
+            post_quiz_question(channel, user)
 
     # You can also post a private directed message that only that user will see. 
     # slack_client.api_call("chat.postEphemeral", channel=channel,
@@ -98,7 +101,7 @@ def handle_badges(channel, user):
     return False
 
 def post_quiz_question(channel, user):
-   current_quiz_question[user] = random.choice(users_facts_test[user])
+    current_quiz_question[user] = random.choice(users_facts_test[user])
     response = "Please answer this quick quiz question on the facts you've seen so far! \n" + current_quiz_question[user][1]
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True) 
 
@@ -158,6 +161,7 @@ def post_is_not_DM(slack_rtm_output):
                            output['user']
     #### Returns null if it is not a valid output.            
     return None, None, None, None
+
 ################
 # PARTICIPATION
 ################
@@ -184,6 +188,7 @@ def text_posted_participation(slack_rtm_output):
 ################
 # CREDITS
 ################
+
 def updateAndPrintCredit(scoreMap, user, scoretype, credit, doPrint=True):
     """
     Updates and prints the current credit score of all users who have generated some content
@@ -245,7 +250,7 @@ if __name__ == "__main__":
             users[user['id']] = user['name']
             users_facts[user['id']] = copy.copy(facts_list)
             users_facts_read[user['id']] = 0
-            users_jokes_test[user['id']] = []
+            users_facts_test[user['id']] = []
             users_jokes[user['id']] = copy.copy(jokes_list)
             users_jokes_read[user['id']] = 0
             quiz_mode[user['id']] = False
@@ -285,15 +290,6 @@ if __name__ == "__main__":
             if commandtype and command and channel and user:
                 handle_command(commandtype, command, channel, user)
 
-            # POSTING text
-            #commandtype, command, channel, user = text_posted_participation(current_state)
-            #if commandtype and command and channel and user:
-                # Handles current output
-                #handle_command(commandtype, command, channel, user)
-                # Updates credit of users
-                #scoreMap = updateAndPrintCredit(scoreMap, user, scoretype, credit, False)
-
-            # End.
             time.sleep(READ_WEBSOCKET_DELAY)
         else:
             print("Connection failed.")
