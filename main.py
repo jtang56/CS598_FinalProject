@@ -46,6 +46,8 @@ def handle_command(commandtype, command, channel, user):
     # Participation
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
+    elif commandtype == 'interesting_DM_post':
+        response = "Yeah, it really is"
     elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
         fact = random.choice(users_facts[user])
         response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact
@@ -81,7 +83,12 @@ def post_is_DM(slack_rtm_output):
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and output["channel"][0] == 'D' and not output['user'] == BOT_ID:
-                if "fact" in output['text']:
+                if "cool" in output['text'] or "interesting" in output['text'] or "amazing" in output['text']:
+                    return 'interesting_DM_post', \
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
+                elif "fact" in output['text']:
                     return 'DM_fact_post', \
                            output['text'], \
                            output['channel'], \
