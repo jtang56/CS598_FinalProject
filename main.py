@@ -182,27 +182,27 @@ def post_is_DM(slack_rtm_output):
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "cool" in output['text'] or "interesting" in output['text'] or "amazing" in output['text']:
+                elif "cool" in output['text'].lower() or "interesting" in output['text'].lower() or "amazing" in output['text'].lower():
                     return 'interesting_DM_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "fact" in output['text']:
+                elif "fact" in output['text'].lower():
                     return 'DM_fact_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "joke" in output['text']:
+                elif "joke" in output['text'].lower():
                     return 'DM_joke_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "yes" in output['text'].split():
+                elif "yes" in output['text'].split().lower():
                     return 'DM_confirmation_yes_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "no" in output['text'].split():
+                elif "no" in output['text'].split().lower():
                     return 'DM_confirmation_no_post', \
                            output['text'], \
                            output['channel'], \
