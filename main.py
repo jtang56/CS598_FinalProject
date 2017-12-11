@@ -29,18 +29,17 @@ import json
 # bot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
 
-EXCITING_WORDS = ["Great!", "Fantastic!", "Awesome!", "Cool!"]
-TOTAL_CHANNEL_FACTS_READ = 0
-TOTAL_CHANNEL_JOKES_READ = 0
-TOTAL_QUIZZES_GIVEN = 0
-TOTAL_QUIZZES_CORRECT = 0
 # instantiate Slack clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
 ################
 # GLOBALS
 ################
-
+EXCITING_WORDS = ["Great!", "Fantastic!", "Awesome!", "Cool!"]
+TOTAL_CHANNEL_FACTS_READ = 0
+TOTAL_CHANNEL_JOKES_READ = 0
+TOTAL_QUIZZES_GIVEN = 0
+TOTAL_QUIZZES_CORRECT = 0
 
 ############
 # SCORES
@@ -58,6 +57,14 @@ def handle_command(commandtype, command, channel, user):
                    "*Avg Jokes Read:* " + str(TOTAL_CHANNEL_JOKES_READ / num_users) + "\n" + \
                    "*Total Questions Administered:* " + str(TOTAL_QUIZZES_GIVEN) + "\n" + \
                    "*Total Questions Answered Correct:* " + str(TOTAL_QUIZZES_CORRECT)
+    elif commandtype == 'individstats':
+        response = ""
+        for user in users.keys():
+            response += "*" + users[user] + "*\n"
+            response += "\t Facts Read: " + str(users_facts_read[user]) + "\n"
+            response += "\t Jokes Read: " + str(users_jokes_read[user]) + "\n"
+            response += "\t Questions Given: " + str(users_questions_given[user]) + "\n"
+            response += "\t Questions Correct: " + str(users_questions_correct[user]) + "\n"
     elif commandtype == 'interesting_DM_post':
         response = "Yeah, it really is"
     elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
@@ -74,14 +81,12 @@ def handle_command(commandtype, command, channel, user):
     elif commandtype == 'DM_joke_post':
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")?"
     elif commandtype == 'DM_confirmation_yes_post':
-        if users_jokes[user] == []:
-            response = "You've read all of the jokes. Thanks for playing!"
-        else:
-            joke = random.choice(users_jokes[user])
-            response = "Here's a joke: \n\n" + joke
-            users_jokes[user].remove(joke)
-            users_jokes_read[user] += 1
-            TOTAL_CHANNEL_JOKES_READ += 1
+        joke = random.choice(users_jokes[user])
+        response = "Here's a joke: \n\n" + joke
+        users_jokes_read[user] += 1
+        TOTAL_CHANNEL_JOKES_READ += 1
+        if users_jokes_read[user] >= 5 and users_jokes_read[user] % 5 == 0:
+            response += "\n*You've read " + str(users_jokes_read[user]) + " jokes.*"
     elif commandtype == 'DM_post':
         response = "Hello, " + users[user] + "\ntype *fact* for a cool fact \n type *joke* for a joke"
     elif commandtype == 'not_DM_post':
@@ -90,6 +95,7 @@ def handle_command(commandtype, command, channel, user):
         if command.upper() == current_quiz_question[user][2].upper():
             response = "Correct! Congratulations on passing this quiz."
             TOTAL_QUIZZES_CORRECT += 1
+            users_questions_correct[user] += 1
         else:
             response = "Incorrect! Try harder next time."
         quiz_mode[user] = False
@@ -151,6 +157,7 @@ def handle_badges(channel, user):
 def post_quiz_question(channel, user):
     global TOTAL_QUIZZES_GIVEN
     TOTAL_QUIZZES_GIVEN += 1
+    users_questions_given[user] += 1
     current_quiz_question[user] = random.choice(users_facts_test[user])
     response = "\n *Please answer this quick quiz question on the facts you've seen so far!* \n" + current_quiz_question[user][1]
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True) 
@@ -167,6 +174,11 @@ def post_is_DM(slack_rtm_output):
                            output['user']
                 elif "getStats" == output['text']:
                     return 'stats', \
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
+                elif "getStatsIndividual" == output['text']:
+                    return 'individstats', \
                            output['text'], \
                            output['channel'], \
                            output['user']
@@ -239,6 +251,8 @@ if __name__ == "__main__":
     users_jokes_read = {}
     quiz_mode = {}
     current_quiz_question = {}
+    users_questions_given = {}
+    users_questions_correct = {}
     channel_info = slack_client.api_call("channels.list")
     channel = channel_info['channels'][0]['id']
     user_info = slack_client.api_call("users.list")
@@ -250,6 +264,8 @@ if __name__ == "__main__":
             users_facts_test[user['id']] = []
             users_jokes[user['id']] = copy.copy(jokes_list)
             users_jokes_read[user['id']] = 0
+            users_questions_given[user['id']] = 0
+            users_questions_correct[user['id']] = 0
             quiz_mode[user['id']] = False
             current_quiz_question[user['id']] = None
             num_users = len(users.keys())        
