@@ -1,10 +1,14 @@
 {
 	"badges": {
-		"1" : "\n:trophy: Factfinder!\nCongratulations on picking your first Fact! :point_up:",
-		"3" : "\n:trophy: FactTrio!\nThree facts. Keep the streak going! :ok_hand: :fire:",
-		"5" : "\n:trophy: FactFiver!\nFive facts! :raised_hand_with_fingers_splayed:",
-		"7" : "\n:trophy: Seven Facts!\nWow look at you learning more facts :earth_africa:",
-		"10" : "\n:trophy: FacTen!\nTen facts!? Looks like this game is in-TEN-sifying :fire_engine: :clap:",
-		"15" : "\n:trophy: FactMaster!\n All hail the FactMaster! :raised_hands: :pray:"
+		"1" : "\n:medal: Factfinder!\nCongratulations on picking your first Fact! :point_up:",
+		"3" : "\n:medal: FactTrio!\nThree facts. Keep the streak going! :ok_hand: :fire:",
+		"5" : "\n:medal: FactFiver!\nFive facts! :raised_hand_with_fingers_splayed:",
+		"7" : "\n:medal: Seven Facts!\nWow look at you learning more facts :earth_africa:",
+		"10" : "\n:sports_medal: FacTen!\nTen facts!? Looks like this game is in-TEN-sifying :heavy_exclamation_mark: :clap:",
+		"15" : "\n:sports_medal: FactMaster!\n All hail the FactMaster! :raised_hands: :pray:",
+		"20" : "\n:trophy: 20Fact!\n Oooh it's getting lit in here! :fire_engine: ",
+		"25" : "\n:trophy: Quarter of a century!\n 25 Facts!! :chart_with_upwards_trend:",
+		"30" : "\n:trophy: Fact Professor\n :books: :mortar_board:",
+		"33" : "\n:trophy: *FactGod*\n You have earned Godly status. Spread the word and help make the Earth a better place! :innocent: :fireworks:"
 	}
 }
