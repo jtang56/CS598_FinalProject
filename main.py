@@ -20,13 +20,16 @@
 import os
 import time
 import json
+import copy
+import random
 from slackclient import SlackClient
 from collections import Counter
 import json
 
 # bot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
-FACT_JOKE_MESSAGE = ""
+
+EXCITING_WORDS = ["Great!", "Fantastic!", "Awesome!", "Cool!"]
 # instantiate Slack clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
@@ -40,22 +43,23 @@ slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 ############
 
 def handle_command(commandtype, command, channel, user):
-    """
-        Receives commands/contents generated.
-        Currenly, prints a directed message to the user containing the same content.
-        """
-
     # Participation
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
     elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
-        response = "Great! Here's a juicy fact: "
+        fact = random.choice(users_facts[user])
+        response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact
+        users_facts[user].remove(fact)
+        #response = "Great! Here's a juicy fact: "
     elif commandtype == 'DM_joke_post':
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")? There are some extremely interesting facts."
     elif commandtype == 'DM_confirmation_yes_post':
-        response = "Great! Here's a joke"
+        joke = random.choice(users_jokes[user])
+        response = "Here's a joke: \n\n" + joke
+        users_jokes[user].remove(joke)
+        #response = "Great! Here's a joke"
     elif commandtype == 'DM_post':
-        response = "Hello, " + users[user] + "\ntype \"fact\" for a cool fact \n type \"joke\" for a funny joke"
+        response = "Hello, " + users[user] + "\ntype *fact* for a cool fact \n type *joke* for a joke"
         #attachments = FACT_JOKE_MESSAGE["attachments"]
         #slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
     elif commandtype == 'not_DM_post':
@@ -178,27 +182,28 @@ def updateAndPrintCredit(scoreMap, user, scoretype, credit, doPrint=True):
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # second delay between reading from firehose
 
-    facts_list = {}
-    jokes_list = {}
+    facts_list = []
+    jokes_list = []
     fact_data = json.load(open('facts.json'))
     for fact in fact_data["facts"]:
-        facts_list[fact] = False
+        facts_list.append(fact)
 
     jokes_data = json.load(open('jokes.json'))
     for joke in jokes_data["jokes"]:
-        jokes_list[joke] = False
+        jokes_list.append(joke)
 
     users = {}
+    users_facts = {}
+    users_jokes = {}
     channel_info = slack_client.api_call("channels.list")
     channel = channel_info['channels'][0]['id']
     user_info = slack_client.api_call("users.list")
     for user in user_info['members']:
         if not user['is_bot'] and user['id'] != 'USLACKBOT':
             users[user['id']] = user['name']
+            users_facts[user['id']] = copy.copy(facts_list)
+            users_jokes[user['id']] = copy.copy(jokes_list)
             num_users = len(users.keys())        
-
-        with open('message.json') as json_data:
-            FACT_JOKE_MESSAGE = json.load(json_data)
 
 ##########FOR DIRECT MESSAGES##########
     #for user in users.keys():
