@@ -1,0 +1,10 @@
+{
+	"badges": {
+		"1" : "Factfinder!\nCongratulations on picking your first Fact!",
+		"3" : "FactTrio!\nThree facts. Keep the streak going!",
+		"5" : "FactFiver!\nFive facts!",
+		"7" : "Seven Facts!\nWow look at you learning more facts",
+		"10" : "FacTen!\nTen facts!? Looks like this game is in-TEN-sifying",
+		"15" : "FactMaster!\n All hail the FactMaster!"
+	}
+}
