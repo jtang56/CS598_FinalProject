@@ -1,10 +1,10 @@
 {
 	"badges": {
-		"1" : ":trophy: Factfinder!\nCongratulations on picking your first Fact!",
-		"3" : ":trophy: FactTrio!\nThree facts. Keep the streak going!",
-		"5" : ":trophy: FactFiver!\nFive facts!",
-		"7" : ":trophy: Seven Facts!\nWow look at you learning more facts",
-		"10" : ":trophy: FacTen!\nTen facts!? Looks like this game is in-TEN-sifying",
-		"15" : ":trophy: FactMaster!\n All hail the FactMaster!"
+		"1" : "\n:trophy: Factfinder!\nCongratulations on picking your first Fact! :point_up:",
+		"3" : "\n:trophy: FactTrio!\nThree facts. Keep the streak going! :ok_hand: :fire:",
+		"5" : "\n:trophy: FactFiver!\nFive facts! :earth_africa:",
+		"7" : "\n:trophy: Seven Facts!\nWow look at you learning more facts :earth_africa:",
+		"10" : ":\ntrophy: FacTen!\nTen facts!? Looks like this game is in-TEN-sifying :fire_engine: :clap:",
+		"15" : ":\ntrophy: FactMaster!\n All hail the FactMaster! :raised_hands: :pray:"
 	}
 }
