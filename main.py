@@ -61,17 +61,24 @@ def handle_command(commandtype, command, channel, user):
         response = "Here's a joke: \n\n" + joke[0]
         users_jokes[user].remove(joke)
         users_jokes_read[user] += 1
-        #response = "Great! Here's a joke"
     elif commandtype == 'DM_post':
         response = "Hello, " + users[user] + "\ntype *fact* for a cool fact \n type *joke* for a joke"
     elif commandtype == 'not_DM_post':
         response = "Thanks for mentioning me, " + "<@" + user + ">"
+    elif commandtype == 'quiz_mode':
+        if command.upper() == current_quiz_question[user][2].upper():
+            response = "Correct! Congratulations on passing this quiz."
+        else:
+            response = "Incorrect! Try harder next time."
+        quiz_mode[user] = False
     else:
         response = ""
 
     # Posts a directed message to the user.
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-    handle_badges(channel, user)
+    if handle_badges(channel, user):
+        quiz_mode[user] = True
+        post_quiz_question(channel, user)
 
     # You can also post a private directed message that only that user will see. 
     # slack_client.api_call("chat.postEphemeral", channel=channel,
@@ -87,13 +94,25 @@ def handle_badges(channel, user):
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
         general_response = users[user] + " received " + badges_data["badges"][str(users_facts_read[user])]
         slack_client.api_call("chat.postMessage", channel="#general", text=general_response, as_user=True)
+        return True
+    return False
+
+def post_quiz_question(channel, user):
+   current_quiz_question[user] = random.choice(users_facts_test[user])
+    response = "Please answer this quick quiz question on the facts you've seen so far! \n" + current_quiz_question[user][1]
+    slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True) 
 
 def post_is_DM(slack_rtm_output):
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and output["channel"][0] == 'D' and not output['user'] == BOT_ID:
-                if "cool" in output['text'] or "interesting" in output['text'] or "amazing" in output['text']:
+                if quiz_mode[output['user']]:
+                    return 'quiz_mode', \
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
+                elif "cool" in output['text'] or "interesting" in output['text'] or "amazing" in output['text']:
                     return 'interesting_DM_post', \
                            output['text'], \
                            output['channel'], \
@@ -216,6 +235,8 @@ if __name__ == "__main__":
     users_facts_test = {}
     users_jokes = {}
     users_jokes_read = {}
+    quiz_mode = {}
+    current_quiz_question = {}
     channel_info = slack_client.api_call("channels.list")
     channel = channel_info['channels'][0]['id']
     user_info = slack_client.api_call("users.list")
@@ -227,6 +248,8 @@ if __name__ == "__main__":
             users_jokes_test[user['id']] = []
             users_jokes[user['id']] = copy.copy(jokes_list)
             users_jokes_read[user['id']] = 0
+            quiz_mode[user['id']] = False
+            current_quiz_question[user['id']] = None
             num_users = len(users.keys())        
 
 ##########FOR DIRECT MESSAGES##########
