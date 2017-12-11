@@ -50,20 +50,19 @@ def handle_command(commandtype, command, channel, user):
         fact = random.choice(users_facts[user])
         response = random.choice(EXCITING_WORDS) + " Here's a really cool fact: \n\n" + fact
         users_facts[user].remove(fact)
-        #response = "Great! Here's a juicy fact: "
+        users_facts_read[user] += 1
     elif commandtype == 'DM_joke_post':
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")? There are some extremely interesting facts."
     elif commandtype == 'DM_confirmation_yes_post':
         joke = random.choice(users_jokes[user])
         response = "Here's a joke: \n\n" + joke
         users_jokes[user].remove(joke)
+        users_jokes_read[user] += 1
         #response = "Great! Here's a joke"
     elif commandtype == 'DM_post':
         response = "Hello, " + users[user] + "\ntype *fact* for a cool fact \n type *joke* for a joke"
-        #attachments = FACT_JOKE_MESSAGE["attachments"]
-        #slack_client.api_call("chat.postMessage", attachments=attachments, channel=channel, text=response, as_user=True)
     elif commandtype == 'not_DM_post':
-        response = "*" + command + "*" + " was posted in a public channel"
+        response = "Thanks for mentioning me, " + "<@" + user + ">"
     else:
         response = ""
 
@@ -92,12 +91,12 @@ def post_is_DM(slack_rtm_output):
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "yes" in output['text']:
+                elif "yes" in output['text'].split():
                     return 'DM_confirmation_yes_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "no" in output['text']:
+                elif "no" in output['text'].split():
                     return 'DM_confirmation_no_post', \
                            output['text'], \
                            output['channel'], \
@@ -115,10 +114,12 @@ def post_is_not_DM(slack_rtm_output):
     if output_list and len(output_list) > 0:
         for output in output_list:
             if output and 'user' in output and 'text' in output and str(output["type"]) == 'message' and not output["channel"][0] == 'D' and not output['user'] == BOT_ID:
-                return 'not_DM_post', \
-                output['text'], \
-                output['channel'], \
-                output['user']
+                if "<@" + BOT_ID + ">" in output['text']:
+                    print("BOT HAS BEEN MENTIONED")
+                    return 'not_DM_post', \
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
     #### Returns null if it is not a valid output.            
     return None, None, None, None
 ################
@@ -194,7 +195,9 @@ if __name__ == "__main__":
 
     users = {}
     users_facts = {}
+    users_facts_read = {}
     users_jokes = {}
+    users_jokes_read = {}
     channel_info = slack_client.api_call("channels.list")
     channel = channel_info['channels'][0]['id']
     user_info = slack_client.api_call("users.list")
@@ -202,7 +205,9 @@ if __name__ == "__main__":
         if not user['is_bot'] and user['id'] != 'USLACKBOT':
             users[user['id']] = user['name']
             users_facts[user['id']] = copy.copy(facts_list)
+            users_facts_read[user['id']] = 0
             users_jokes[user['id']] = copy.copy(jokes_list)
+            users_jokes_read[user['id']] = 0
             num_users = len(users.keys())        
 
 ##########FOR DIRECT MESSAGES##########
@@ -224,7 +229,7 @@ if __name__ == "__main__":
             current_state = slack_client.rtm_read()
             if current_state == None or len(current_state) <= 0:
                 continue
-                print (current_state)
+            print (current_state)
 
             ### PARTICIPATION ###
             scoretype = 'participation'
@@ -234,9 +239,9 @@ if __name__ == "__main__":
             if commandtype and command and channel and user:
                 handle_command(commandtype, command, channel, user) 
 
-                commandtype, command, channel, user = post_is_not_DM(current_state)
-                if commandtype and command and channel and user:
-                    handle_command(commandtype, command, channel, user)
+            commandtype, command, channel, user = post_is_not_DM(current_state)
+            if commandtype and command and channel and user:
+                handle_command(commandtype, command, channel, user)
 
             # POSTING text
             #commandtype, command, channel, user = text_posted_participation(current_state)
