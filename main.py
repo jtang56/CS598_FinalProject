@@ -54,7 +54,7 @@ def handle_command(commandtype, command, channel, user):
         users_facts[user].remove(fact)
         users_facts_read[user] += 1
     elif commandtype == 'DM_joke_post':
-        response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")? There are some extremely interesting facts."
+        response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")?"
     elif commandtype == 'DM_confirmation_yes_post':
         joke = random.choice(users_jokes[user])
         response = "Here's a joke: \n\n" + joke
@@ -110,9 +110,9 @@ def post_is_DM(slack_rtm_output):
                            output['user']
                 else:
                     return 'DM_post', \
-                    output['text'], \
-                    output['channel'], \
-                    output['user']
+                           output['text'], \
+                           output['channel'], \
+                           output['user']
     #### Returns null if it is not a valid output.            
     return None, None, None, None
 
