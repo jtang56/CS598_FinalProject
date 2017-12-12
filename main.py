@@ -197,12 +197,12 @@ def post_is_DM(slack_rtm_output):
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "yes" in output['text'].split().lower():
+                elif "yes" in output['text'].lower().split():
                     return 'DM_confirmation_yes_post', \
                            output['text'], \
                            output['channel'], \
                            output['user']
-                elif "no" in output['text'].split().lower():
+                elif "no" in output['text'].lower().split():
                     return 'DM_confirmation_no_post', \
                            output['text'], \
                            output['channel'], \
