@@ -99,7 +99,7 @@ def handle_command(commandtype, command, channel, user):
             users_questions_correct[user] += 1
             quiz_mode[user] = False
         else:
-            if users_facts_read[user] < 5:
+            if users_facts_read[user] < 15:
                 response = "Incorrect! Try harder next time."
                 quiz_mode[user] = False
             else:
