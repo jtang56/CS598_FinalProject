@@ -132,7 +132,10 @@ def handle_badges(channel, user):
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-        general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])] + "\n" + users[user] + " has answered " + str(users_questions_correct[user]) + " questions correctly out of a total of " + str(users_questions_given[user]) +" questions."
+        if users_questions_given[user] == 0:
+            general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])]
+        else:
+            general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])] + "\n" + users[user] + " has answered " + str(users_questions_correct[user]) + " questions correctly out of a total of " + str(users_questions_given[user]) +" questions."
 
 ##############################################################################
 ##############################################################################
