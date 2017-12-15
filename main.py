@@ -46,7 +46,7 @@ TOTAL_QUIZZES_CORRECT = 0
 ############
 
 def handle_command(commandtype, command, channel, user):
-    global TOTAL_CHANNEL_FACTS_READ, TOTAL_CHANNEL_JOKES_READ, TOTAL_QUIZZES_CORRECT
+    global TOTAL_CHANNEL_FACTS_READ, TOTAL_CHANNEL_JOKES_READ, TOTAL_QUIZZES_CORRECT, TOTAL_QUIZZES_GIVEN
     should_handle_badges = False
     if commandtype == 'posted_text_participation':
         response = "<@" + user + "> Hi! You said *" + command + "*"
@@ -67,7 +67,7 @@ def handle_command(commandtype, command, channel, user):
             response += "\t Questions Correct: " + str(users_questions_correct[user]) + "\n"
     elif commandtype == 'interesting_DM_post':
         response = "Yeah, it really is"
-    elif commandtype == 'DM_fact_post' or commandtype == 'DM_confirmation_no_post':
+    elif commandtype == 'DM_fact_post' or (commandtype == 'DM_confirmation_no_post' and users_currently_confirmation[user]):
         should_handle_badges = True
         if users_facts[user] == []:
             response = "WOW!!!!!!!! You've read all the facts we have! Great Job!"
@@ -79,8 +79,9 @@ def handle_command(commandtype, command, channel, user):
             users_facts_read[user] += 1
             TOTAL_CHANNEL_FACTS_READ += 1
     elif commandtype == 'DM_joke_post':
+        users_currently_confirmation[user] = True
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")?"
-    elif commandtype == 'DM_confirmation_yes_post':
+    elif commandtype == 'DM_confirmation_yes_post' and users_currently_confirmation[user]:
         joke = random.choice(users_jokes[user])
         response = "Here's a joke: \n\n" + joke
         users_jokes_read[user] += 1
@@ -97,8 +98,12 @@ def handle_command(commandtype, command, channel, user):
             TOTAL_QUIZZES_CORRECT += 1
             users_questions_correct[user] += 1
         else:
-            response = "Incorrect! Try harder next time."
-        quiz_mode[user] = False
+            if users_facts_read[user] < 5:
+                response = "Incorrect! Try harder next time."
+                quiz_mode[user] = False
+            else:
+                response = "Incorrect! Please answer again.\n *Please answer this quick quiz question on the facts you've seen so far!* \n" + current_quiz_question[user][1]
+                TOTAL_QUIZZES_GIVEN += 1
     else:
         response = ""
 
@@ -249,6 +254,7 @@ if __name__ == "__main__":
     users_facts_test = {}
     users_jokes = {}
     users_jokes_read = {}
+    users_currently_confirmation = {}
     quiz_mode = {}
     current_quiz_question = {}
     users_questions_given = {}
@@ -264,6 +270,7 @@ if __name__ == "__main__":
             users_facts_test[user['id']] = []
             users_jokes[user['id']] = copy.copy(jokes_list)
             users_jokes_read[user['id']] = 0
+            users_currently_confirmation = False
             users_questions_given[user['id']] = 0
             users_questions_correct[user['id']] = 0
             quiz_mode[user['id']] = False
