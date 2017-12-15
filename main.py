@@ -68,6 +68,7 @@ def handle_command(commandtype, command, channel, user):
     elif commandtype == 'interesting_DM_post':
         response = "Yeah, it really is"
     elif commandtype == 'DM_fact_post' or (commandtype == 'DM_confirmation_no_post' and users_currently_confirmation[user]):
+        users_currently_confirmation[user] = False
         should_handle_badges = True
         if users_facts[user] == []:
             response = "WOW!!!!!!!! You've read all the facts we have! Great Job!"
@@ -82,6 +83,7 @@ def handle_command(commandtype, command, channel, user):
         users_currently_confirmation[user] = True
         response = "Are you sure you want to hear a joke (\"yes\"\\\"no\")?"
     elif commandtype == 'DM_confirmation_yes_post' and users_currently_confirmation[user]:
+        users_currently_confirmation[user] = False
         joke = random.choice(users_jokes[user])
         response = "Here's a joke: \n\n" + joke
         users_jokes_read[user] += 1
@@ -98,10 +100,12 @@ def handle_command(commandtype, command, channel, user):
             TOTAL_QUIZZES_CORRECT += 1
             users_questions_correct[user] += 1
             quiz_mode[user] = False
+            handle_badges(channel, user)
         else:
-            if users_facts_read[user] < 5:
+            if users_facts_read[user] < 10:
                 response = "Incorrect! Try harder next time."
                 quiz_mode[user] = False
+                handle_badges(channel, user)
             else:
                 response = "Incorrect! Please answer again.\n *~~~~~~~~~~~~~~~Please answer this quick quiz question on the facts you've seen so far!~~~~~~~~~~~~~~* \n" + current_quiz_question[user][1]
                 users_questions_given[user] += 1
@@ -112,9 +116,16 @@ def handle_command(commandtype, command, channel, user):
     # Posts a directed message to the user.
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
     if should_handle_badges:
-        if handle_badges(channel, user):
-            quiz_mode[user] = True
-            post_quiz_question(channel, user)
+        badges_data = json.load(open('badges.json'))
+        if str(users_facts_read[user]) in badges_data["badges"].keys():
+            if users_facts_read[user] >= 3:
+                quiz_mode[user] = True
+                post_quiz_question(channel, user)
+            else:
+                handle_badges(channel, user)
+        #if handle_badges(channel, user):
+            #quiz_mode[user] = True
+            #post_quiz_question(channel, user)
 
     # You can also post a private directed message that only that user will see. 
     # slack_client.api_call("chat.postEphemeral", channel=channel,
