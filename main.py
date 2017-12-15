@@ -279,7 +279,7 @@ if __name__ == "__main__":
             users_facts_test[user['id']] = []
             users_jokes[user['id']] = copy.copy(jokes_list)
             users_jokes_read[user['id']] = 0
-            users_currently_confirmation = False
+            users_currently_confirmation[user['id']] = False
             users_questions_given[user['id']] = 0
             users_questions_correct[user['id']] = 0
             quiz_mode[user['id']] = False
