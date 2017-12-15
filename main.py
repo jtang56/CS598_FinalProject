@@ -97,12 +97,14 @@ def handle_command(commandtype, command, channel, user):
             response = "Correct! Congratulations on passing this quiz."
             TOTAL_QUIZZES_CORRECT += 1
             users_questions_correct[user] += 1
+            quiz_mode[user] = False
         else:
             if users_facts_read[user] < 5:
                 response = "Incorrect! Try harder next time."
                 quiz_mode[user] = False
             else:
-                response = "Incorrect! Please answer again.\n *Please answer this quick quiz question on the facts you've seen so far!* \n" + current_quiz_question[user][1]
+                response = "Incorrect! Please answer again.\n *~~~~~~~~~~~~~~~Please answer this quick quiz question on the facts you've seen so far!~~~~~~~~~~~~~~* \n" + current_quiz_question[user][1]
+                users_questions_given[user] += 1
                 TOTAL_QUIZZES_GIVEN += 1
     else:
         response = ""
@@ -126,7 +128,11 @@ def handle_badges(channel, user):
     if str(users_facts_read[user]) in badges_data["badges"].keys():
         response = badges_data["badges"][str(users_facts_read[user])]
         slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-        general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])]
+        response = " \n"
+        slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+        slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+        slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+        general_response = "*" + users[user] + "* received " + badges_data["badges"][str(users_facts_read[user])] + "\n" + users[user] + " has answered " + str(users_questions_correct[user]) + " questions correctly out of a total of " + str(users_questions_given[user]) +" questions."
 
 ##############################################################################
 ##############################################################################
@@ -164,7 +170,7 @@ def post_quiz_question(channel, user):
     TOTAL_QUIZZES_GIVEN += 1
     users_questions_given[user] += 1
     current_quiz_question[user] = random.choice(users_facts_test[user])
-    response = "\n *Please answer this quick quiz question on the facts you've seen so far!* \n" + current_quiz_question[user][1]
+    response = "\n *~~~~~~~~~~~~~~~Please answer this quick quiz question on the facts you've seen so far!~~~~~~~~~~~~~~*~ \n" + current_quiz_question[user][1]
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True) 
 
 def post_is_DM(slack_rtm_output):
